@@ -1,1 +1,27 @@
-{"name":"@rtc-less/rtc-turn-creds","private":true,"description":"TURN credential server for WebRTC NAT traversal"}
+{
+  "name": "@rtc-less/turn-creds",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "description": "TURN credential server for WebRTC NAT traversal",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc --build",
+    "dev": "bun --hot src/dev.ts",
+    "lint": "biome ci . && oxlint --config ../../.oxlintrc.json",
+    "type-check": "tsc --noEmit",
+    "test": "vitest run",
+    "deploy": "wrangler deploy"
+  },
+  "dependencies": {
+    "hono": "^4.7.0",
+    "@hono/node-server": "^1.14.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "typescript": "^5.9.3",
+    "vitest": "^3.0.0",
+    "wrangler": "^4.0.0"
+  }
+}
