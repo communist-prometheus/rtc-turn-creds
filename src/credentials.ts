@@ -2,7 +2,10 @@ const CREDENTIAL_TTL_SECONDS = 21_600
 
 const encoder = new TextEncoder()
 
-const hmacSign = async (secret: string, data: string): Promise<string> => {
+const hmacSign = async (
+  secret: string,
+  data: string
+): Promise<string> => {
   const key = await crypto.subtle.importKey(
     'raw',
     encoder.encode(secret),
@@ -17,20 +20,62 @@ const hmacSign = async (secret: string, data: string): Promise<string> => {
     encoder.encode(data)
   )
 
-  return btoa(String.fromCharCode(...new Uint8Array(signature)))
+  return btoa(
+    String.fromCharCode(
+      ...new Uint8Array(signature)
+    )
+  )
 }
 
 export const generateCredentials = async (
   secret: string,
   turnServers: readonly string[]
 ) => {
-  const expiry = Math.floor(Date.now() / 1000) + CREDENTIAL_TTL_SECONDS
+  const hasCustomServers =
+    turnServers.length > 0 &&
+    turnServers[0] !== 'turn.rtc-less.com'
+
+  if (!hasCustomServers) {
+    return {
+      iceServers: [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' },
+        {
+          urls: 'turn:openrelay.metered.ca:80',
+          username: 'openrelayproject',
+          credential: 'openrelayproject',
+        },
+        {
+          urls: 'turn:openrelay.metered.ca:443',
+          username: 'openrelayproject',
+          credential: 'openrelayproject',
+        },
+        {
+          urls: 'turn:openrelay.metered.ca:443?transport=tcp',
+          username: 'openrelayproject',
+          credential: 'openrelayproject',
+        },
+      ],
+      ttl: CREDENTIAL_TTL_SECONDS,
+    }
+  }
+
+  const expiry =
+    Math.floor(Date.now() / 1000) +
+    CREDENTIAL_TTL_SECONDS
 
   const username = `${expiry}:rtc-less`
-  const credential = await hmacSign(secret, username)
+  const credential = await hmacSign(
+    secret,
+    username
+  )
 
   const iceServers = [
-    { urls: turnServers.map(s => `stun:${s}:3478`) },
+    {
+      urls: turnServers.map(
+        s => `stun:${s}:3478`
+      ),
+    },
     ...turnServers.flatMap(s => [
       {
         urls: `turn:${s}:3478?transport=udp`,
