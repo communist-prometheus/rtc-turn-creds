@@ -23,14 +23,9 @@ app.get('/api/turn-credentials', async c => {
     'localhost'
   ).split(',')
 
-  const creds = await generateCredentials(
-    secret,
-    servers
-  )
+  const creds = await generateCredentials(secret, servers)
 
   return c.json(creds)
 })
 
-app.get('/health', c =>
-  c.json({ status: 'ok' })
-)
+app.get('/health', c => c.json({ status: 'ok' }))
