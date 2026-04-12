@@ -11,6 +11,4 @@ app.get('/api/turn-credentials', async c => {
   return c.json(creds)
 })
 
-app.get('/health', c =>
-  c.json({ status: 'ok' })
-)
+app.get('/health', c => c.json({ status: 'ok' }))
